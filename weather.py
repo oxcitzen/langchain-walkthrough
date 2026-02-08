@@ -7,7 +7,7 @@ load_dotenv()
 
 @tool
 def get_weather(city: str):
-    """Return weather information for a given city."""
+    """Return weather information for a given city. (Public API)"""
     url = f"https://wttr.in/{city}?format=j1"
     response = requests.get(url)
     return response.json()
@@ -20,6 +20,7 @@ agent = create_agent(
 )
 
 # Invoke the agent
+# The API is doing the heavy lifting with KL interpret as Kuala Lumpur
 response = agent.invoke({
     "messages": [{"role": "user", "content": "What is the weather like in KL?"}]
 })
