@@ -6,6 +6,40 @@ from dotenv import load_dotenv
 from langchain.tools import tool, ToolRuntime
 from typing import Optional
 
+'''
+Flow
+
+User message
+↓
+checkpointer loads conversation state
+↓
+context_schema injects hidden runtime data
+↓
+LLM decides tool usage
+↓
+tools access runtime context
+↓
+LLM produces structured output
+↓
+response_format validates result
+↓
+checkpointer saves new state
+'''
+
+'''
+Mental model for structured output
+
+     LLM
+      ↓
+  JSON text
+      ↓
+LangChain validates against schema
+      ↓
+Converted into dataclass instance
+      ↓
+Wrapped inside result dictionary
+'''
+
 load_dotenv()
 
 @dataclass
@@ -56,12 +90,8 @@ res = agent.invoke(
 )
 
 print(type(res))
-#print(res['structured_response'])
 print(res['structured_response'].summary)
 print(res['structured_response'].temp_celsius)
-#print(f"Summary: {res.structured_response.summary}")
-#print(f"Summary: {res.structured_response.temp_celsius}")
-
 
 # Start a new thread for new conversation
 #config = {"configurable": {"thread_id": "2"}}
