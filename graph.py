@@ -60,6 +60,7 @@ def classify_message(state: State):
     ])
     
     # This is LangGraph way of providing an update to the state global dictionary
+    # equivalent of state["message_type"] = result.message_type
     return {"message_type": result.message_type}
 
 
