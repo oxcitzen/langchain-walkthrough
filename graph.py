@@ -8,6 +8,8 @@ from typing_extensions import TypedDict
 
 '''
 LLM that generates emotional or logical response depending on the query.
+      
+Classifier --> Router --> Logical  OR  Emotional
 '''
 
 load_dotenv()
@@ -43,6 +45,7 @@ class State(TypedDict):
 
 def classify_message(state: State):
     last_message = state["messages"][-1]
+    # Return output that matches the MessageClassifier schema
     classifier_llm = llm.with_structured_output(MessageClassifier)
 
     result = classifier_llm.invoke([
@@ -55,6 +58,8 @@ def classify_message(state: State):
         },
         {"role": "user", "content": last_message.content}
     ])
+    
+    # This is LangGraph way of providing an update to the state global dictionary
     return {"message_type": result.message_type}
 
 
@@ -105,7 +110,6 @@ def logical_agent(state: State):
 
 
 graph_builder = StateGraph(State)
-
 graph_builder.add_node("classifier", classify_message)
 graph_builder.add_node("router", router)
 graph_builder.add_node("therapist", therapist_agent)
