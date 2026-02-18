@@ -17,6 +17,11 @@ llm = ChatOpenAI(
     temperature=0
 )
 
+
+# Pydantic model used to enforce structured output from the LLM.
+# It ensures the model returns a valid classification indicating whether
+# the user's message requires an emotional (therapist-style) or logical response.
+# The `message_type` field is strictly limited to "emotional" or "logical".
 class MessageClassifier(BaseModel):
     message_type: Literal["emotional", "logical"] = Field(
         ...,
@@ -24,6 +29,13 @@ class MessageClassifier(BaseModel):
     )
 
 
+# Defines the shared state structure for the LangGraph workflow.
+# This state object is passed between nodes during execution.
+#
+# - `messages`: Stores the conversation history. The `add_messages`
+#   annotation ensures new messages are appended rather than overwritten.
+# - `message_type`: Stores the classification result (emotional or logical)
+#   used by the router to determine which agent should handle the response.
 class State(TypedDict):
     messages: Annotated[list, add_messages]
     message_type: str | None
